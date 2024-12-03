@@ -23,7 +23,7 @@ private:
     void loadAccounts() {
         ifstream file(fileName);
         if (!file) {
-            cerr << "Error opening file: " << fileName << endl;
+            cerr << "Error: Could not open file " << fileName << ". Starting fresh.\n";
             return;
         }
 
@@ -33,28 +33,32 @@ private:
             string token;
             Account account;
 
-            getline(ss, token, ':');
-            account.bankNumber = stoi(token);
+            try {
+                getline(ss, token, ':');
+                account.bankNumber = stoi(token);
 
-            getline(ss, token, ':');
-            account.name = token;
+                getline(ss, token, ':');
+                account.name = token;
 
-            getline(ss, token, ':');
-            account.pin = token;
+                getline(ss, token, ':');
+                account.pin = token;
 
-            getline(ss, token, ':');
-            account.balance = stod(token);
+                getline(ss, token, ':');
+                account.balance = stod(token);
 
-            accounts[account.bankNumber] = account;
+                accounts[account.bankNumber] = account;
+            } catch (const exception &e) {
+                cerr << "Error reading account data: " << e.what() << ". Skipping entry.\n";
+            }
         }
 
         file.close();
     }
 
     void saveAccounts() {
-        ofstream file(fileName);
+        ofstream file(fileName, ios::trunc);
         if (!file) {
-            cerr << "Error opening file: " << fileName << endl;
+            cerr << "Error: Could not open file " << fileName << " for writing.\n";
             return;
         }
 
@@ -83,6 +87,11 @@ public:
     }
 
     void createAccount(const string &name, const string &pin) {
+        if (name.empty() || pin.empty() || pin.length() < 4) {
+            cout << "Invalid name or PIN. Please try again.\n";
+            return;
+        }
+
         int newBankNumber = generateBankNumber();
         accounts[newBankNumber] = {newBankNumber, name, pin, 0.0};
         cout << "Account created successfully. Your Bank Number is " << newBankNumber << ".\n";
@@ -97,6 +106,11 @@ public:
     }
 
     void modifyAccount(Account &account, const string &newName, const string &newPin) {
+        if (newName.empty() || newPin.empty() || newPin.length() < 4) {
+            cout << "Invalid name or PIN. Please try again.\n";
+            return;
+        }
+
         account.name = newName;
         account.pin = newPin;
         cout << "Account updated successfully.\n";
