@@ -94,6 +94,7 @@ public:
 
         int newBankNumber = generateBankNumber();
         accounts[newBankNumber] = {newBankNumber, name, pin, 0.0};
+        saveAccounts(); // Save changes immediately
         cout << "Account created successfully. Your Bank Number is " << newBankNumber << ".\n";
     }
 
@@ -113,6 +114,7 @@ public:
 
         account.name = newName;
         account.pin = newPin;
+        saveAccounts(); // Save changes immediately
         cout << "Account updated successfully.\n";
     }
 
@@ -122,6 +124,7 @@ public:
             return;
         }
         account.balance += amount;
+        saveAccounts(); // Save changes immediately
         cout << "Deposit successful. New Balance: " << fixed << setprecision(2) << account.balance << "\n";
     }
 
@@ -135,6 +138,7 @@ public:
             return;
         }
         account.balance -= amount;
+        saveAccounts(); // Save changes immediately
         cout << "Withdrawal successful. New Balance: " << fixed << setprecision(2) << account.balance << "\n";
     }
 
@@ -182,7 +186,8 @@ int main() {
                     if (accountChoice == 1) {
                         string newName, newPin;
                         cout << "Enter new name: ";
-                        cin >> newName;
+                        cin.ignore();
+                        getline(cin, newName);
                         cout << "Enter new PIN: ";
                         cin >> newPin;
                         bms.modifyAccount(*account, newName, newPin);
@@ -211,7 +216,8 @@ int main() {
         } else if (choice == 2) {
             string name, pin;
             cout << "Enter your name: ";
-            cin >> name;
+            cin.ignore();
+            getline(cin, name);
             cout << "Enter a PIN: ";
             cin >> pin;
             bms.createAccount(name, pin);
