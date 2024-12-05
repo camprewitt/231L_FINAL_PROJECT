@@ -9,18 +9,19 @@
 using namespace std;
 
 struct Account {
-    int bankNumber;
+    int bankNumber; //a unique identifier for the account
     string name;
-    string pin;
+    string pin;     //required for access to the account 
     double balance;
 };
 
 class BankManagementSystem {
 private:
-    map<int, Account> accounts;
-    string fileName;
+    map<int, Account> accounts; //stores all accounts indexed by their bank number
+    string fileName;            //file to persist the account data
 
-    void loadAccounts() {
+
+    void loadAccounts() {   //this will read the account data from the file and populate the accounts map
         ifstream file(fileName);
         if (!file) {
             cerr << "Error: Could not open file " << fileName << ". Starting fresh.\n";
@@ -55,7 +56,7 @@ private:
         file.close();
     }
 
-    void saveAccounts() {
+    void saveAccounts() {      //Writes all accounts and their information to the file 
         ofstream file(fileName, ios::trunc);
         if (!file) {
             cerr << "Error: Could not open file " << fileName << " for writing.\n";
@@ -73,15 +74,16 @@ private:
         file.close();
     }
 
-    int generateBankNumber() {
+    int generateBankNumber() {      //Each account will have a number generated for it starting at 1
         return accounts.empty() ? 1 : accounts.rbegin()->first + 1;
     }
 
 public:
+    //Constructor: Initializes the system and loads accounts frmot eh file
     BankManagementSystem(const string &fileName) : fileName(fileName) {
         loadAccounts();
     }
-
+    // Destructor: Ensures all data is saved to the file before exiting
     ~BankManagementSystem() {
         saveAccounts();
     }
@@ -98,6 +100,7 @@ public:
         cout << "Account created successfully. Your Bank Number is " << newBankNumber << ".\n";
     }
 
+    //Check if account details are a match using acount number and pin then allows user into account menu
     Account *signIn(int bankNumber, const string &pin) {
         auto it = accounts.find(bankNumber);
         if (it != accounts.end() && it->second.pin == pin) {
